@@ -21,48 +21,48 @@ The randomization can be customized using the following settings:
 
 ### Number of items to pick
 
-&nbsp;&nbsp;&nbsp;&nbsp; How many items and/or lists are picked from the list.
+How many items and/or lists are picked from the list.
 
 ### Number of items is a recursive limit
 
-&nbsp;&nbsp;&nbsp;&nbsp; Specifies, if the previous limit should apply to sublists also.
+Specifies, if the previous limit should apply to sublists also.
 
 ### Pick unique names
 
-&nbsp;&nbsp;&nbsp;&nbsp; Prevents picking multiple identical names. Doesn't differentiate between lists and items.
+Prevents picking multiple identical names. Doesn't differentiate between lists and items.
 
 ### Pick unique recursively
 
-&nbsp;&nbsp;&nbsp;&nbsp; Specifies, if the previous setting should apply to sublists also. Applies only when pick unique items is also set.
+Specifies, if the previous setting should apply to sublists also. Applies only when pick unique items is also set.
 
 ### Combine sublists
 
-&nbsp;&nbsp;&nbsp;&nbsp; When randomizing, items and lists in lists one level down are considered to be part of the current list.
+When randomizing, items and lists in lists one level down are considered to be part of the current list.
 
 ### Combine sublists recursively
 
-&nbsp;&nbsp;&nbsp;&nbsp; When randomizing, items in all sublists are considered to be part of the current list. Applies only when combine sublists is also set.
+When randomizing, items in all sublists are considered to be part of the current list. Applies only when combine sublists is also set.
 
 ### Ignore empty lists
 
-&nbsp;&nbsp;&nbsp;&nbsp; Empty lists won't be picked. List with only unactive
+Empty lists won't be picked. List with only unactive
 items counts as empty.
 
 ### Ignore empty lists recursively
 
-&nbsp;&nbsp;&nbsp;&nbsp; Specifies, if the previous setting should apply to sublists also. Applies only when ignore empty lists is also set.
+Specifies, if the previous setting should apply to sublists also. Applies only when ignore empty lists is also set.
 
 ### Ignore weights
 
-&nbsp;&nbsp;&nbsp;&nbsp; Doesn't apply weighting.
+Doesn't apply weighting.
 
 ### Ignore weights recursively
 
-&nbsp;&nbsp;&nbsp;&nbsp; Specifies, if the previous setting should apply to sublists also. Applies only when ignore weights is also set.
+Specifies, if the previous setting should apply to sublists also. Applies only when ignore weights is also set.
 
 ### Deactivate picked items
 
-&nbsp;&nbsp;&nbsp;&nbsp; Deactivates items (not lists) that get random picked.
+Deactivates items (not lists) that get random picked.
 
 ## Importing and exporting
 
@@ -118,6 +118,8 @@ Imported JSON objects have to include a "name" key. If a JSON object also has an
 	}]
 }]
 ```
+
+Permissions to read and write to external storage are required on android for importing and exporting to work.
 
 ## Development environment
 
