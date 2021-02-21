@@ -15,7 +15,7 @@ export class ItemList {
             combineListsRecursive = false,
             deactivateAfterRandomization = false,
             ignoreEmptyLists = true,
-            ignoreEmptyListsRecursive = true,
+            ignoreEmptyListsRecursive = false,
             ignoreWeights = false,
             ignoreWeightsRecursive = false,
             items = [],

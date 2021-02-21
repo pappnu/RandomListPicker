@@ -80,28 +80,32 @@ export class ListView extends Component {
                     try {
                         let content = await pickAndRead(['application/json']);
 
-                        try {
-                            let contentJson = JSON.parse(content);
+                        if (content) {
+                            try {
+                                let contentJson = JSON.parse(content);
 
-                            if (this.context.list.validateJson(contentJson)) {
-                                this.context.addFromJson(
-                                    contentJson,
-                                    this.props.route.params.idPath,
-                                );
-                            } else {
+                                if (
+                                    this.context.list.validateJson(contentJson)
+                                ) {
+                                    this.context.addFromJson(
+                                        contentJson,
+                                        this.props.route.params.idPath,
+                                    );
+                                } else {
+                                    Alert.alert(
+                                        'JSON validation error',
+                                        res.name +
+                                            " doesn't have the necessary data fields to form lists from.",
+                                    );
+                                }
+                            } catch (error) {
                                 Alert.alert(
-                                    'JSON validation error',
+                                    'JSON parse error',
                                     res.name +
-                                        " doesn't have the necessary data fields to form lists from.",
+                                        " doesn't include valid JSON data." +
+                                        error,
                                 );
                             }
-                        } catch (error) {
-                            Alert.alert(
-                                'JSON parse error',
-                                res.name +
-                                    " doesn't include valid JSON data." +
-                                    error,
-                            );
                         }
                     } catch (error) {
                         if (DocumentPicker.isCancel(error)) {
@@ -123,14 +127,16 @@ export class ListView extends Component {
                     try {
                         let content = await pickAndRead(['text/plain']);
 
-                        let contentList = content.split(/\r?\n/);
+                        if (content) {
+                            let contentList = content.split(/\r?\n/);
 
-                        for (let line of contentList) {
-                            this.context.addItem(
-                                this.props.route.params.idPath,
-                                'item',
-                                line,
-                            );
+                            for (let line of contentList) {
+                                this.context.addItem(
+                                    this.props.route.params.idPath,
+                                    'item',
+                                    line,
+                                );
+                            }
                         }
                     } catch (error) {
                         if (DocumentPicker.isCancel(error)) {

@@ -3,21 +3,35 @@ import {ToastAndroid, Alert} from 'react-native';
 import DocumentPicker from 'react-native-document-picker';
 import RNFS from 'react-native-fs';
 
+import {
+    externalStorageReadPermissionFlow,
+    externalStorageWritePermissionFlow,
+} from '../permissions/permissions';
+
 export async function pickAndRead(mimeTypes) {
-    const res = await DocumentPicker.pick({
-        type: mimeTypes,
-    });
+    const permission = await externalStorageReadPermissionFlow();
+    if (permission) {
+        const res = await DocumentPicker.pick({
+            type: mimeTypes,
+        });
 
-    /**
-    console.log(
-        res.uri,
-        res.type, // mime type
-        res.name,
-        res.size,
-    );
-    */
+        /**
+        console.log(
+            res.uri,
+            res.type, // mime type
+            res.name,
+            res.size,
+        );
+        */
 
-    return await RNFS.readFile(res.uri);
+        return await RNFS.readFile(res.uri);
+    } else {
+        Alert.alert(
+            'Error importing',
+            'External storage read permission not granted.',
+        );
+        return undefined;
+    }
 }
 
 export async function writeFile(
@@ -27,12 +41,20 @@ export async function writeFile(
     successToast,
     encoding = 'utf8',
 ) {
-    const fullPath = path + '/' + name;
-    RNFS.writeFile(fullPath, content, 'utf8')
-        .then((success) => {
-            ToastAndroid.show(successToast, ToastAndroid.SHORT);
-        })
-        .catch((error) => {
-            Alert.alert('Error saving file', error.toString());
-        });
+    const permission = await externalStorageWritePermissionFlow();
+    if (permission) {
+        const fullPath = path + '/' + name;
+        RNFS.writeFile(fullPath, content, encoding)
+            .then((success) => {
+                ToastAndroid.show(successToast, ToastAndroid.SHORT);
+            })
+            .catch((error) => {
+                Alert.alert('Error saving file', error.toString());
+            });
+    } else {
+        Alert.alert(
+            'Error exporting',
+            'External storage write permission not granted.',
+        );
+    }
 }
