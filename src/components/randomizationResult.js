@@ -66,11 +66,18 @@ export class RandomizationResult extends Component {
     );
 
     extractParentListNames(list) {
-        let lists = {};
+        let lists = [];
         let shortestPathLength = Number.MAX_SAFE_INTEGER;
         for (let item of list) {
-            if (!lists.hasOwnProperty(item.idPath.toString())) {
-                lists[item.idPath.toString()] = item.parentName;
+            const itemIdPath = item.idPath.toString();
+            if (!lists.find((item) => item.idPath === itemIdPath)) {
+                lists.push({
+                    name:
+                        item.parentNames.length > 0
+                            ? '/' + item.parentNames.join('/')
+                            : '/',
+                    idPath: itemIdPath,
+                });
                 if (item.idPath.length - 1 < shortestPathLength) {
                     shortestPathLength = item.idPath.length - 1;
                 }
@@ -79,10 +86,12 @@ export class RandomizationResult extends Component {
         return [lists, shortestPathLength];
     }
 
-    listItemsByList(list) {
+    listItemsByList(list, parentLists) {
         let result = [];
-        for (let i in this.parentLists) {
-            let items = list.filter((item) => item.idPath.toString() === i);
+        for (let i of parentLists) {
+            let items = list.filter(
+                (item) => item.idPath.toString() === i.idPath,
+            );
             result.push({
                 jsx: (
                     <View>
@@ -98,7 +107,7 @@ export class RandomizationResult extends Component {
                                             12,
                                 },
                             ]}>
-                            {this.parentLists[i]}
+                            {i.name}
                         </Text>
                         <View style={this.context.style.resultStyle.itemList}>
                             <FlatList
@@ -109,7 +118,7 @@ export class RandomizationResult extends Component {
                         </View>
                     </View>
                 ),
-                key: i.toString(),
+                key: i.idPath,
             });
         }
         return result;
@@ -133,11 +142,11 @@ export class RandomizationResult extends Component {
 
     exportTxtWithParentLists(fileName) {
         let content = '';
-        for (let i in this.parentLists) {
+        for (let i of this.parentLists) {
             let items = this.props.route.params.result.items.filter(
-                (item) => item.idPath.toString() === i,
+                (item) => item.idPath.toString() === i.idPath,
             );
-            content += this.parentLists[i] + '\n';
+            content += i.name + '\n';
             for (let item of items) {
                 content += '    ' + item.name + '\n';
             }
@@ -168,11 +177,11 @@ export class RandomizationResult extends Component {
     }
 
     exportJsonWithParentLists(fileName) {
-        let content = Object.entries(this.parentLists).map(([key, value]) => {
+        let content = this.parentLists.map((i) => {
             return {
-                name: value,
+                name: i.name,
                 items: this.props.route.params.result.items
-                    .filter((item) => item.idPath.toString() === key)
+                    .filter((item) => item.idPath.toString() === i.idPath)
                     .map((item) => {
                         return {name: item.name};
                     }),
@@ -188,10 +197,14 @@ export class RandomizationResult extends Component {
     }
 
     naturalSort(a, b) {
-        return a.name.localeCompare(b.name, undefined, {
+        return a.localeCompare(b, undefined, {
             numeric: true,
             sensitivity: 'base',
         });
+    }
+
+    naturalNameSort(a, b) {
+        return this.naturalSort(a.name, b.name);
     }
 
     listSort(a, b) {
@@ -208,32 +221,43 @@ export class RandomizationResult extends Component {
 
     naturalListSort(a, b) {
         if (a.idPath.length !== b.idPath.length) {
-            return a.idPath.length - b.idPath.length;
+            const aParents = a.parentNames.join('');
+            const bParents = b.parentNames.join('');
+            return this.naturalSort(aParents, bParents);
         }
         for (let i = 0; i < a.idPath.length; i++) {
             if (a.idPath[i] !== b.idPath[i]) {
-                return a.idPath[i] - b.idPath[i];
+                const aParents = a.parentNames.join('');
+                const bParents = b.parentNames.join('');
+                return this.naturalSort(aParents, bParents);
             }
         }
-        return this.naturalSort(a, b);
+        return this.naturalNameSort(a, b);
     }
 
     render() {
         let items = [...this.props.route.params.result.items];
         switch (this.context.settings.resultSort) {
             case 'natural':
-                items = this.listItems(items.sort(this.naturalSort.bind(this)));
+                items = this.listItems(
+                    items.sort(this.naturalNameSort.bind(this)),
+                );
                 break;
 
             case 'byList':
                 items = this.listItemsByList(
                     items.sort(this.listSort.bind(this)),
+                    this.parentLists,
                 );
                 break;
 
             case 'byListNatural':
+                const parentLists = [...this.parentLists].sort(
+                    this.naturalNameSort.bind(this),
+                );
                 items = this.listItemsByList(
                     items.sort(this.naturalListSort.bind(this)),
+                    parentLists,
                 );
                 break;
 
@@ -409,7 +433,7 @@ export class RandomizationResult extends Component {
                 <Header
                     showBackButton={true}
                     navigation={this.props.navigation}
-                    text={'Randomization result'}
+                    text={this.props.route.params.result.name}
                     additionalComponents={additionalComponents}
                 />
                 <FlatList data={items} renderItem={this.renderJsx} />

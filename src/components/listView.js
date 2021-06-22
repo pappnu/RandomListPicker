@@ -361,9 +361,16 @@ export class ListView extends Component {
                                 for (let prop in i) {
                                     tempItem[prop] = i[prop];
                                 }
-                                tempItem.parentName = this.context.list.getItem(
-                                    tempItem.idPath.slice(1),
-                                ).name;
+                                const parentIds = tempItem.idPath.slice(
+                                    this.props.route.params.idPath.length + 1,
+                                );
+                                tempItem.parentNames = parentIds.map(
+                                    (id, index) => {
+                                        return list.getItem(
+                                            parentIds.slice(0, index + 1),
+                                        ).name;
+                                    },
+                                );
                                 return tempItem;
                             });
 
