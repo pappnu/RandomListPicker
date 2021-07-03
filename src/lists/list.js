@@ -176,7 +176,7 @@ export class ItemList {
                 }
                 return item.items.splice(
                     item.items.findIndex(
-                        (i) => i === item.getItem([id.length - 1]),
+                        (i) => i.id === item.getItem(id[id.length - 1]).id,
                     ),
                     1,
                 );
@@ -186,7 +186,7 @@ export class ItemList {
         }
 
         deleted = this.items.splice(
-            this.items.findIndex((i) => i === this.getItem(id)),
+            this.items.findIndex((i) => i.id === this.getItem(id).id),
             1,
         );
 
@@ -385,7 +385,7 @@ export class ItemList {
         } else {
             count += lists.length;
         }
-        
+
         return count;
     }
 
@@ -394,9 +394,7 @@ export class ItemList {
         let count = 0;
 
         if (recursive) {
-            items = this.items.filter(
-                (item) => !(item instanceof ItemList),
-            );
+            items = this.items.filter((item) => !(item instanceof ItemList));
             let lists = this.items.filter((item) => item instanceof ItemList);
             for (let list of lists) {
                 count += list.countWeight(true);
