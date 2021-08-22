@@ -4,7 +4,7 @@ import React, {Component} from 'react';
 import {Alert} from 'react-native';
 
 import {NavigationContainer} from '@react-navigation/native';
-import {createStackNavigator} from '@react-navigation/stack';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import RNFS from 'react-native-fs';
 
@@ -22,6 +22,8 @@ import {resultStyle} from '../styles/resultStyles';
 import {settingsStyle} from '../styles/settingsStyles';
 import {rippleStyle} from '../styles/rippleStyles';
 import {History} from '../components/history';
+
+const Stack = createNativeStackNavigator();
 
 export default class App extends Component {
     constructor(props) {
@@ -249,8 +251,6 @@ export default class App extends Component {
     }
 
     render() {
-        const Stack = createStackNavigator();
-
         return (
             <appContext.Provider
                 value={{
@@ -271,7 +271,7 @@ export default class App extends Component {
                 <NavigationContainer>
                     <Stack.Navigator
                         initialRouteName={'list'}
-                        screenOptions={{animationEnabled: false}}>
+                        screenOptions={{animation: 'none'}}>
                         <Stack.Screen
                             name="list"
                             component={ListView}
