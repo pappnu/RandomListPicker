@@ -11,7 +11,7 @@ import {
 export async function pickAndRead(mimeTypes) {
     const permission = await externalStorageReadPermissionFlow();
     if (permission) {
-        const res = await DocumentPicker.pick({
+        const res = await DocumentPicker.pickSingle({
             type: mimeTypes,
         });
 
