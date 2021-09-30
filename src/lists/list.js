@@ -159,7 +159,7 @@ export class ItemList {
             }
             return item;
         }
-        return this.items.find((item) => item.id === id);
+        return this.items.find(item => item.id === id);
     }
 
     deleteItem(id) {
@@ -176,7 +176,7 @@ export class ItemList {
                 }
                 return item.items.splice(
                     item.items.findIndex(
-                        (i) => i.id === item.getItem(id[id.length - 1]).id,
+                        i => i.id === item.getItem(id[id.length - 1]).id,
                     ),
                     1,
                 );
@@ -186,7 +186,7 @@ export class ItemList {
         }
 
         deleted = this.items.splice(
-            this.items.findIndex((i) => i.id === this.getItem(id).id),
+            this.items.findIndex(i => i.id === this.getItem(id).id),
             1,
         );
 
@@ -210,13 +210,17 @@ export class ItemList {
     }
 
     checkIfActiveItems(exclude = []) {
-        let lists = this.items.filter((item) => item instanceof ItemList);
-        let items = this.items.filter((item) => !(item instanceof ItemList));
+        let lists = this.items.filter(item => item instanceof ItemList);
+        let items = this.items.filter(item => !(item instanceof ItemList));
         for (let item of items) {
-            if (item.active && !exclude.includes(item.name)) return true;
+            if (item.active && !exclude.includes(item.name)) {
+                return true;
+            }
         }
         for (let list of lists) {
-            if (list.checkIfActiveItems(exclude)) return true;
+            if (list.checkIfActiveItems(exclude)) {
+                return true;
+            }
         }
         return false;
     }
@@ -248,41 +252,39 @@ export class ItemList {
             if (this.combineListsRecursive) {
                 while (
                     items.find(
-                        (item) => item.hasOwnProperty('items') && item.active,
+                        item => item.hasOwnProperty('items') && item.active,
                     )
                 ) {
                     let sublistItems = [];
 
                     for (let item of items.filter(
-                        (item) => item.hasOwnProperty('items') && item.active,
+                        i => i.hasOwnProperty('items') && i.active,
                     )) {
                         sublistItems = sublistItems.concat(item.items);
                     }
 
-                    items = items.filter(
-                        (item) => !item.hasOwnProperty('items'),
-                    );
+                    items = items.filter(item => !item.hasOwnProperty('items'));
                     items = items.concat(sublistItems);
                 }
             } else {
                 let sublistItems = [];
 
                 for (let item of items.filter(
-                    (item) => item.hasOwnProperty('items') && item.active,
+                    i => i.hasOwnProperty('items') && i.active,
                 )) {
                     sublistItems = sublistItems.concat(item.items);
                 }
 
-                items = items.filter((item) => !item.hasOwnProperty('items'));
+                items = items.filter(item => !item.hasOwnProperty('items'));
                 items = items.concat(sublistItems);
             }
         }
 
         // Don't pick inactive items
-        items = items.filter((item) => item.active);
+        items = items.filter(item => item.active);
 
         // Don't pick excluded items
-        items = items.filter((item) => !exclude.includes(item.name));
+        items = items.filter(item => !exclude.includes(item.name));
 
         let picked = [];
 
@@ -302,9 +304,7 @@ export class ItemList {
                     randomItem instanceof ItemList &&
                     !randomItem.checkIfActiveItems(exc)
                 ) {
-                    items.splice(
-                        items.findIndex((item) => item === randomItem),
-                    );
+                    items.splice(items.findIndex(item => item === randomItem));
                     --i;
                 } else {
                     picked.push(randomItem);
@@ -313,7 +313,7 @@ export class ItemList {
                 if (this.pickUnique || pickUniqueRecursive) {
                     // Filter out items with the same name as the picked item if pickUnique is set
                     items = items.filter(
-                        (item) => !(item.name === randomItem.name),
+                        item => !(item.name === randomItem.name),
                     );
 
                     // Add picked items to exclude list
@@ -327,8 +327,8 @@ export class ItemList {
             }
         }
 
-        let listsList = picked.filter((item) => item instanceof ItemList);
-        let itemsList = picked.filter((item) => !(item instanceof ItemList));
+        let listsList = picked.filter(item => item instanceof ItemList);
+        let itemsList = picked.filter(item => !(item instanceof ItemList));
 
         let max;
         if (numToPickRecursive || this.numToPickRecursive) {
@@ -359,7 +359,7 @@ export class ItemList {
             itemsList = itemsList.concat(sublistItems);
 
             if (pickUniqueRecursive) {
-                exc = exc.concat(sublistItems.map((item) => item.name));
+                exc = exc.concat(sublistItems.map(item => item.name));
             }
             if (max) {
                 max = max - sublistItems.length;
@@ -370,11 +370,11 @@ export class ItemList {
     }
 
     countItems(active, recursive) {
-        let lists = this.items.filter((item) => item instanceof ItemList);
-        let items = this.items.filter((item) => !(item instanceof ItemList));
+        let lists = this.items.filter(item => item instanceof ItemList);
+        let items = this.items.filter(item => !(item instanceof ItemList));
         if (active) {
-            lists = lists.filter((item) => item.active);
-            items = items.filter((item) => item.active);
+            lists = lists.filter(item => item.active);
+            items = items.filter(item => item.active);
         }
 
         let count = items.length;
@@ -394,8 +394,8 @@ export class ItemList {
         let count = 0;
 
         if (recursive) {
-            items = this.items.filter((item) => !(item instanceof ItemList));
-            let lists = this.items.filter((item) => item instanceof ItemList);
+            items = this.items.filter(item => !(item instanceof ItemList));
+            let lists = this.items.filter(item => item instanceof ItemList);
             for (let list of lists) {
                 count += list.countWeight(true);
             }
@@ -414,49 +414,49 @@ export class ItemList {
 
     validateJson(json) {
         let properties = {
-            name: (value) => {
+            name: value => {
                 return checkType(value, 'string');
             },
-            active: (value) => {
+            active: value => {
                 return checkType(value, 'boolean');
             },
-            weight: (value) => {
+            weight: value => {
                 return checkType(value, 'number');
             },
-            items: (value) => {
+            items: value => {
                 return Array.isArray(value);
             },
-            numToPick: (value) => {
+            numToPick: value => {
                 return Number.isInteger(value);
             },
-            numToPickRecursive: (value) => {
+            numToPickRecursive: value => {
                 return checkType(value, 'boolean');
             },
-            pickUnique: (value) => {
+            pickUnique: value => {
                 return checkType(value, 'boolean');
             },
-            pickUniqueRecursive: (value) => {
+            pickUniqueRecursive: value => {
                 return checkType(value, 'boolean');
             },
-            combineLists: (value) => {
+            combineLists: value => {
                 return checkType(value, 'boolean');
             },
-            combineListsRecursive: (value) => {
+            combineListsRecursive: value => {
                 return checkType(value, 'boolean');
             },
-            deactivateAfterRandomization: (value) => {
+            deactivateAfterRandomization: value => {
                 return checkType(value, 'boolean');
             },
-            ignoreEmptyLists: (value) => {
+            ignoreEmptyLists: value => {
                 return checkType(value, 'boolean');
             },
-            ignoreEmptyListsRecursive: (value) => {
+            ignoreEmptyListsRecursive: value => {
                 return checkType(value, 'boolean');
             },
-            ignoreWeights: (value) => {
+            ignoreWeights: value => {
                 return checkType(value, 'boolean');
             },
-            ignoreWeightsRecursive: (value) => {
+            ignoreWeightsRecursive: value => {
                 return checkType(value, 'boolean');
             },
         };
@@ -485,7 +485,7 @@ export class ItemList {
     exportJson({ids = []} = {}) {
         let items = this.items;
         if (ids.length > 0) {
-            items = this.items.filter((item) => ids.includes(item.id));
+            items = this.items.filter(item => ids.includes(item.id));
         }
 
         let itemsJson = [];

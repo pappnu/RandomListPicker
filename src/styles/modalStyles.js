@@ -51,5 +51,5 @@ export const modalStyle = StyleSheet.create({
     },
     filler: {
         width: 12,
-    }
+    },
 });

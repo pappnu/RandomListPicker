@@ -44,11 +44,14 @@ export async function writeFile(
     const permission = await externalStorageWritePermissionFlow();
     if (permission) {
         const fullPath = path + '/' + name;
+        // TODO: find a non-hacky solution
+        // for details see: https://github.com/itinance/react-native-fs/issues/700#issuecomment-570650632
+        await RNFS.unlink(fullPath);
         RNFS.writeFile(fullPath, content, encoding)
-            .then((success) => {
+            .then(success => {
                 ToastAndroid.show(successToast, ToastAndroid.SHORT);
             })
-            .catch((error) => {
+            .catch(error => {
                 Alert.alert('Error saving file', error.toString());
             });
     } else {

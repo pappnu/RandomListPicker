@@ -1,11 +1,5 @@
 import React, {Component} from 'react';
-import {
-    Text,
-    FlatList,
-    View,
-    Pressable,
-    Alert,
-} from 'react-native';
+import {Text, FlatList, View, Pressable, Alert} from 'react-native';
 import RNFS from 'react-native-fs';
 import DocumentPicker from 'react-native-document-picker';
 
@@ -93,15 +87,13 @@ export class ListView extends Component {
                                 } else {
                                     Alert.alert(
                                         'JSON validation error',
-                                        res.name +
-                                            " doesn't have the necessary data fields to form lists from.",
+                                        "File doesn't have the necessary data fields to form lists from.",
                                     );
                                 }
                             } catch (error) {
                                 Alert.alert(
                                     'JSON parse error',
-                                    res.name +
-                                        " doesn't include valid JSON data." +
+                                    "File doesn't include valid JSON data." +
                                         error,
                                 );
                             }
@@ -237,7 +229,7 @@ export class ListView extends Component {
             />,
         ];
 
-        renderListEntry = ({item}) => (
+        const renderListEntry = ({item}) => (
             <ListItem
                 onPress={() => {
                     if (item.hasOwnProperty('items')) {
@@ -268,7 +260,7 @@ export class ListView extends Component {
                 }}
                 active={item.active}
                 weight={item.weight}
-                onChangeText={(text) => {
+                onChangeText={text => {
                     this.context.setListProperty(
                         'weight',
                         parseFloat(text) ? parseFloat(text) : 0,
@@ -310,7 +302,7 @@ export class ListView extends Component {
                         })
                     }
                     headline={this.state.nameModalHeadline}
-                    onChangeText={(text) => this.setState({newName: text})}
+                    onChangeText={text => this.setState({newName: text})}
                     textInputValue={this.state.newName}
                     selectTextOnFocus={true}
                     submitText={this.state.nameModalSubmitText}
@@ -323,7 +315,6 @@ export class ListView extends Component {
                             nameModalSubmitText: '',
                             nameModalSubmit: () => {},
                             selectedIdPath: [],
-                            newName: '',
                         });
                     }}
                 />
@@ -355,7 +346,7 @@ export class ListView extends Component {
 
                             // Copy items for archival purposes
                             // Can show old results even if lists are edited/removed
-                            let copyItems = randomItems.map((i) => {
+                            let copyItems = randomItems.map(i => {
                                 let tempItem = {};
                                 for (let prop in i) {
                                     tempItem[prop] = i[prop];
@@ -386,7 +377,7 @@ export class ListView extends Component {
                             this.context.saveToHistory(result);
                             if (list.deactivateAfterRandomization) {
                                 this.context.deactivateItems(
-                                    randomItems.map((item) =>
+                                    randomItems.map(item =>
                                         item.idPath.slice(1).concat([item.id]),
                                     ),
                                 );

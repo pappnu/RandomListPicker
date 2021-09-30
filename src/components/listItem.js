@@ -26,7 +26,7 @@ export class ListItem extends Component {
                 </Pressable>
                 <TextInput
                     keyboardType="number-pad"
-                    onChangeText={(text) => this.props.onChangeText(text)}
+                    onChangeText={text => this.props.onChangeText(text)}
                     value={
                         this.props.weight ? this.props.weight.toString() : '0'
                     }

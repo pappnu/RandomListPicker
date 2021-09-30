@@ -20,10 +20,8 @@ export class RandomizationResult extends Component {
             exportFunction: () => {},
             exportName: 'Result',
         };
-        [
-            this.parentLists,
-            this.shortestPathLength,
-        ] = this.extractParentListNames([...props.route.params.result.items]);
+        [this.parentLists, this.shortestPathLength] =
+            this.extractParentListNames([...props.route.params.result.items]);
     }
 
     componentDidMount() {
@@ -70,7 +68,7 @@ export class RandomizationResult extends Component {
         let shortestPathLength = Number.MAX_SAFE_INTEGER;
         for (let item of list) {
             const itemIdPath = item.idPath.toString();
-            if (!lists.find((item) => item.idPath === itemIdPath)) {
+            if (!lists.find(i => i.idPath === itemIdPath)) {
                 lists.push({
                     name:
                         item.parentNames.length > 0
@@ -90,7 +88,7 @@ export class RandomizationResult extends Component {
         let result = [];
         for (let i of parentLists) {
             let items = list.filter(
-                (item) => item.idPath.toString() === i.idPath,
+                item => item.idPath.toString() === i.idPath,
             );
             result.push({
                 jsx: (
@@ -144,7 +142,7 @@ export class RandomizationResult extends Component {
         let content = '';
         for (let i of this.parentLists) {
             let items = this.props.route.params.result.items.filter(
-                (item) => item.idPath.toString() === i.idPath,
+                item => item.idPath.toString() === i.idPath,
             );
             content += i.name + '\n';
             for (let item of items) {
@@ -164,7 +162,7 @@ export class RandomizationResult extends Component {
     }
 
     exportJson(fileName) {
-        let content = this.props.route.params.result.items.map((item) => {
+        let content = this.props.route.params.result.items.map(item => {
             return {name: item.name};
         });
 
@@ -177,12 +175,12 @@ export class RandomizationResult extends Component {
     }
 
     exportJsonWithParentLists(fileName) {
-        let content = this.parentLists.map((i) => {
+        let content = this.parentLists.map(i => {
             return {
                 name: i.name,
                 items: this.props.route.params.result.items
-                    .filter((item) => item.idPath.toString() === i.idPath)
-                    .map((item) => {
+                    .filter(item => item.idPath.toString() === i.idPath)
+                    .map(item => {
                         return {name: item.name};
                     }),
             };
@@ -322,9 +320,8 @@ export class RandomizationResult extends Component {
                     this.setState({
                         exportModal: false,
                         nameModal: true,
-                        exportFunction: this.exportJsonWithParentLists.bind(
-                            this,
-                        ),
+                        exportFunction:
+                            this.exportJsonWithParentLists.bind(this),
                     });
                 },
             },
@@ -344,9 +341,8 @@ export class RandomizationResult extends Component {
                     this.setState({
                         exportModal: false,
                         nameModal: true,
-                        exportFunction: this.exportTxtWithParentLists.bind(
-                            this,
-                        ),
+                        exportFunction:
+                            this.exportTxtWithParentLists.bind(this),
                     });
                 },
             },
@@ -373,7 +369,7 @@ export class RandomizationResult extends Component {
             },
         ];
 
-        const optionModalsJsx = optionModals.map((i) => (
+        const optionModalsJsx = optionModals.map(i => (
             <OptionModal
                 key={i.headline}
                 visible={i.visible}
@@ -417,7 +413,7 @@ export class RandomizationResult extends Component {
                         })
                     }
                     headline={'File name'}
-                    onChangeText={(text) => this.setState({exportName: text})}
+                    onChangeText={text => this.setState({exportName: text})}
                     textInputValue={this.state.exportName}
                     selectTextOnFocus={true}
                     submitText={'Export'}

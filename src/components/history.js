@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {FlatList, View, Text, Pressable} from 'react-native';
+import {FlatList, View} from 'react-native';
 
 import {appContext} from '../context/context';
 import {Header} from './header';
@@ -33,7 +33,9 @@ export class History extends Component {
                     renderItem={this.renderHistoryEntry}
                     getItemLayout={(data, index) => ({
                         length: this.context.style.settingsStyle.text.height,
-                        offset: this.context.style.settingsStyle.text.height * index,
+                        offset:
+                            this.context.style.settingsStyle.text.height *
+                            index,
                         index,
                     })}
                 />

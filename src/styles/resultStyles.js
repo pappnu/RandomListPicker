@@ -22,5 +22,5 @@ export const resultStyle = StyleSheet.create({
         paddingBottom: 4,
         borderBottomWidth: 1,
         borderColor: 'rgba(150, 150, 150, 1)',
-    }
+    },
 });

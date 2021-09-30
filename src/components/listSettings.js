@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, ToastAndroid, FlatList} from 'react-native';
+import {View, FlatList} from 'react-native';
 import RNFS from 'react-native-fs';
 
 import {appContext} from '../context/context';
@@ -62,10 +62,10 @@ export class ListSettings extends Component {
             {
                 text: '# of items to pick',
                 keyboardType: 'number-pad',
-                onChangeText: (text) =>
+                onChangeText: text =>
                     this.context.setListProperty(
                         'numToPick',
-                        parseInt(text) ? parseInt(text) : 0,
+                        parseInt(text, 10) ? parseInt(text, 10) : 0,
                         this.props.route.params.idPath,
                     ),
                 value: list.numToPick ? list.numToPick.toString() : '0',
@@ -285,11 +285,11 @@ export class ListSettings extends Component {
             },
         ];
 
-        infoFields = infoFields.map((i) => (
+        infoFields = infoFields.map(i => (
             <InfoText text={i.text} value={i.value} />
         ));
 
-        textInputFields = textInputFields.map((i) => (
+        textInputFields = textInputFields.map(i => (
             <TextInputSetting
                 text={i.text}
                 keyboardType={i.keyboardType}
@@ -298,7 +298,7 @@ export class ListSettings extends Component {
             />
         ));
 
-        checkBoxFields = checkBoxFields.map((i) => (
+        checkBoxFields = checkBoxFields.map(i => (
             <CheckBoxSetting
                 text={i.text}
                 textStyle={i.textStyle}
@@ -309,7 +309,7 @@ export class ListSettings extends Component {
             />
         ));
 
-        buttonFields = buttonFields.map((i) => (
+        buttonFields = buttonFields.map(i => (
             <ButtonSetting text={i.text} onPress={i.onPress} />
         ));
 
@@ -324,7 +324,7 @@ export class ListSettings extends Component {
                     visible={this.state.nameModal}
                     onRequestClose={() => this.setState({nameModal: false})}
                     headline={'File name'}
-                    onChangeText={(text) => this.setState({newName: text})}
+                    onChangeText={text => this.setState({newName: text})}
                     textInputValue={this.state.newName}
                     selectTextOnFocus={true}
                     submitText={'Export'}

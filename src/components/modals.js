@@ -31,8 +31,11 @@ export class OptionModal extends Component {
                             keyExtractor={(item, index) => index.toString()}
                             renderItem={this.renderOption}
                             getItemLayout={(data, index) => ({
-                                length: this.context.style.modalStyle.option.height,
-                                offset: this.context.style.modalStyle.option.height * index,
+                                length: this.context.style.modalStyle.option
+                                    .height,
+                                offset:
+                                    this.context.style.modalStyle.option
+                                        .height * index,
                                 index,
                             })}
                         />
@@ -71,9 +74,7 @@ export class TextInputModal extends Component {
                             {this.props.headline}
                         </Text>
                         <TextInput
-                            onChangeText={(text) =>
-                                this.props.onChangeText(text)
-                            }
+                            onChangeText={text => this.props.onChangeText(text)}
                             value={this.props.textInputValue}
                             autoFocus={true}
                             selectTextOnFocus={this.props.selectTextOnFocus}

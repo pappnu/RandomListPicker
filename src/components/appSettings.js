@@ -6,7 +6,6 @@ import {Header} from './header';
 import {CheckBoxSetting} from './settingInputs';
 
 export class AppSettings extends Component {
-
     renderSetting = ({item}) => item;
 
     render() {
@@ -40,7 +39,9 @@ export class AppSettings extends Component {
                     renderItem={this.renderSetting}
                     getItemLayout={(data, index) => ({
                         length: this.context.style.settingsStyle.text.height,
-                        offset: this.context.style.settingsStyle.text.height * index,
+                        offset:
+                            this.context.style.settingsStyle.text.height *
+                            index,
                         index,
                     })}
                 />

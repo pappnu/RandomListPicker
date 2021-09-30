@@ -54,7 +54,7 @@ export default class App extends Component {
 
         this.readFromLocalStorage(
             this.listKey,
-            (result) => {
+            result => {
                 let resultJson = JSON.parse(result);
                 if (resultJson && this.state.list.validateJson(resultJson)) {
                     let baseList = new ItemList(0, resultJson.name, {
@@ -69,7 +69,7 @@ export default class App extends Component {
                     this.setState({list: baseList});
                 }
             },
-            (error) => {
+            error => {
                 if (error.code !== 'ENOENT') {
                     Alert.alert(
                         'Document storage Error',
@@ -82,13 +82,13 @@ export default class App extends Component {
 
         this.readFromLocalStorage(
             this.historyKey,
-            (result) => {
+            result => {
                 let resultJson = JSON.parse(result);
                 if (resultJson) {
                     this.setState({history: resultJson});
                 }
             },
-            (error) => {
+            error => {
                 if (error.code !== 'ENOENT') {
                     Alert.alert(
                         'Document Storage Error',
@@ -101,13 +101,13 @@ export default class App extends Component {
 
         this.readFromAsyncStorage(
             this.settingsKey,
-            (result) => {
+            result => {
                 let resultJson = JSON.parse(result);
                 if (resultJson) {
                     this.setState({settings: resultJson});
                 }
             },
-            (error) =>
+            error =>
                 Alert.alert(
                     'Async Storage Error',
                     "Couldn't read settings from async storage. " + error,
@@ -116,7 +116,8 @@ export default class App extends Component {
     }
 
     saveToAsyncStorage(key, value) {
-        AsyncStorage.setItem(key, JSON.stringify(value)).catch((error) => {
+        console.log(JSON.stringify(value));
+        AsyncStorage.setItem(key, JSON.stringify(value)).catch(error => {
             Alert.alert(
                 'Async Storage Error',
                 "Couldn't save to async storage. " + error,
@@ -134,16 +135,19 @@ export default class App extends Component {
         path = RNFS.DocumentDirectoryPath,
         encoding = 'utf8',
     ) {
-        RNFS.writeFile(
-            path + '/' + filename,
-            JSON.stringify(data),
-            encoding,
-        ).catch((error) => {
-            Alert.alert(
-                'File write Error',
-                "Couldn't save to document storage. " + error,
+        // TODO: find a non-hacky solution
+        // for details see: https://github.com/itinance/react-native-fs/issues/700#issuecomment-570650632
+        const filepath = path + '/' + filename;
+        const saveFile = () =>
+            RNFS.writeFile(filepath, JSON.stringify(data), encoding).catch(
+                error => {
+                    Alert.alert(
+                        'File write Error',
+                        "Couldn't save to document storage. " + error,
+                    );
+                },
             );
-        });
+        RNFS.unlink(filepath).then(saveFile).catch(saveFile);
     }
 
     readFromLocalStorage(
