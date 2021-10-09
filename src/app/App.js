@@ -10,10 +10,10 @@ import RNFS from 'react-native-fs';
 
 import {ItemList} from '../lists/list';
 import {appContext} from '../context/context';
-import {ListView} from '../components/listView';
-import {ListSettings} from '../components/listSettings';
-import {AppSettings} from '../components/appSettings';
-import {RandomizationResult} from '../components/randomizationResult';
+import {ListView} from '../screens/listView';
+import {ListSettings} from '../screens/listSettings';
+import {AppSettings} from '../screens/appSettings';
+import {RandomizationResult} from '../screens/randomizationResult';
 import {headerStyle} from '../styles/headerStyles';
 import {listViewStyle} from '../styles/listViewStyles';
 import {listItemStyle} from '../styles/listItemStyles';
@@ -21,7 +21,7 @@ import {modalStyle} from '../styles/modalStyles';
 import {resultStyle} from '../styles/resultStyles';
 import {settingsStyle} from '../styles/settingsStyles';
 import {rippleStyle} from '../styles/rippleStyles';
-import {History} from '../components/history';
+import {History} from '../screens/history';
 
 const Stack = createNativeStackNavigator();
 

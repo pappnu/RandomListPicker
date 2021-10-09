@@ -2,8 +2,8 @@ import React, {Component} from 'react';
 import {FlatList, View} from 'react-native';
 
 import {appContext} from '../context/context';
-import {Header} from './header';
-import {ButtonSetting} from './settingInputs';
+import {Header} from '../components/header';
+import {ButtonSetting} from '../components/settingInputs';
 
 export class History extends Component {
     renderHistoryEntry = ({item}) => (

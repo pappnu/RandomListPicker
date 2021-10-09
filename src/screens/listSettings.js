@@ -3,14 +3,14 @@ import {View, FlatList} from 'react-native';
 import RNFS from 'react-native-fs';
 
 import {appContext} from '../context/context';
-import {Header} from './header';
-import {TextInputModal} from './modals';
+import {Header} from '../components/header';
+import {TextInputModal} from '../components/modals';
 import {
     CheckBoxSetting,
     InfoText,
     TextInputSetting,
     ButtonSetting,
-} from './settingInputs';
+} from '../components/settingInputs';
 import {writeFile} from '../fileAccess/fileAccess';
 
 export class ListSettings extends Component {

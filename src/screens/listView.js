@@ -5,10 +5,10 @@ import DocumentPicker from 'react-native-document-picker';
 
 import {pickAndRead, writeFile} from '../fileAccess/fileAccess';
 import {appContext} from '../context/context';
-import {Header} from './header';
-import {PressableIcon} from './pressableIcon';
-import {ListItem} from './listItem';
-import {OptionModal, TextInputModal} from './modals';
+import {Header} from '../components/header';
+import {PressableIcon} from '../components/pressableIcon';
+import {ListItem} from '../components/listItem';
+import {OptionModal, TextInputModal} from '../components/modals';
 
 export class ListView extends Component {
     constructor(props) {

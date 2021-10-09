@@ -5,9 +5,9 @@ import IdleTimerManager from 'react-native-idle-timer';
 import RNFS from 'react-native-fs';
 
 import {appContext} from '../context/context';
-import {PressableIcon} from './pressableIcon';
-import {Header} from './header';
-import {OptionModal, TextInputModal} from './modals';
+import {PressableIcon} from '../components/pressableIcon';
+import {Header} from '../components/header';
+import {OptionModal, TextInputModal} from '../components/modals';
 import {writeFile} from '../fileAccess/fileAccess';
 
 export class RandomizationResult extends Component {

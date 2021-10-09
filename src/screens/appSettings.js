@@ -2,8 +2,8 @@ import React, {Component} from 'react';
 import {View, FlatList} from 'react-native';
 
 import {appContext} from '../context/context';
-import {Header} from './header';
-import {CheckBoxSetting} from './settingInputs';
+import {Header} from '../components/header';
+import {CheckBoxSetting} from '../components/settingInputs';
 
 export class AppSettings extends Component {
     renderSetting = ({item}) => item;
