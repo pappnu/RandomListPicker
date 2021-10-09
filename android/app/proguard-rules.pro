@@ -13,7 +13,3 @@
 
 -keep class com.facebook.hermes.unicode.** { *; }
 -keep class com.facebook.jni.** { *; }
-
-# react-native-reanimated
-
--keep class com.facebook.react.turbomodule.** { *; }
