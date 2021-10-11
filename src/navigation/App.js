@@ -22,6 +22,8 @@ import {resultStyle} from '../styles/resultStyles';
 import {settingsStyle} from '../styles/settingsStyles';
 import {rippleStyle} from '../styles/rippleStyles';
 import {History} from '../screens/history';
+import {OptionModal} from '../screens/optionModal';
+import {TextInputModal} from '../screens/textInputModal';
 
 const Stack = createNativeStackNavigator();
 
@@ -116,7 +118,6 @@ export default class App extends Component {
     }
 
     saveToAsyncStorage(key, value) {
-        console.log(JSON.stringify(value));
         AsyncStorage.setItem(key, JSON.stringify(value)).catch(error => {
             Alert.alert(
                 'Async Storage Error',
@@ -275,11 +276,10 @@ export default class App extends Component {
                 <NavigationContainer>
                     <Stack.Navigator
                         initialRouteName={'list'}
-                        screenOptions={{animation: 'none'}}>
+                        screenOptions={{animation: 'none', headerShown: false}}>
                         <Stack.Screen
                             name="list"
                             component={ListView}
-                            options={{headerShown: false}}
                             initialParams={{
                                 idPath: [],
                             }}
@@ -287,23 +287,48 @@ export default class App extends Component {
                         <Stack.Screen
                             name="listSettings"
                             component={ListSettings}
-                            options={{headerShown: false}}
                         />
                         <Stack.Screen
                             name="appSettings"
                             component={AppSettings}
-                            options={{headerShown: false}}
                         />
                         <Stack.Screen
                             name="randomResult"
                             component={RandomizationResult}
-                            options={{headerShown: false}}
                         />
-                        <Stack.Screen
-                            name="history"
-                            component={History}
-                            options={{headerShown: false}}
-                        />
+                        <Stack.Screen name="history" component={History} />
+                        <Stack.Group
+                            screenOptions={{
+                                presentation: 'transparentModal',
+                                cardStyle: {backgroundColor: 'transparent'},
+                                cardOverlayEnabled: true,
+                                cardStyleInterpolator: ({
+                                    current: {progress},
+                                }) => ({
+                                    cardStyle: {
+                                        opacity: progress.interpolate({
+                                            inputRange: [0, 0.5, 0.9, 1],
+                                            outputRange: [0, 0.25, 0.7, 1],
+                                        }),
+                                    },
+                                    overlayStyle: {
+                                        opacity: progress.interpolate({
+                                            inputRange: [0, 1],
+                                            outputRange: [0, 0.5],
+                                            extrapolate: 'clamp',
+                                        }),
+                                    },
+                                }),
+                            }}>
+                            <Stack.Screen
+                                name="optionModal"
+                                component={OptionModal}
+                            />
+                            <Stack.Screen
+                                name="textInputModal"
+                                component={TextInputModal}
+                            />
+                        </Stack.Group>
                     </Stack.Navigator>
                 </NavigationContainer>
             </appContext.Provider>

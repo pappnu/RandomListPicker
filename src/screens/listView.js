@@ -8,81 +8,68 @@ import {appContext} from '../context/context';
 import {Header} from '../components/header';
 import {PressableIcon} from '../components/pressableIcon';
 import {ListItem} from '../components/listItem';
-import {OptionModal, TextInputModal} from '../components/modals';
 
 export class ListView extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            optionModal: false,
-            optionModalHeadline: '',
-            optionModalOptions: [],
-            nameModal: false,
-            nameModalHeadline: '',
-            nameModalSubmitText: '',
-            nameModalSubmit: () => {},
-            selectedIdPath: [],
-            newName: '',
-        };
-    }
-
     render() {
-        const list = this.context.list.getItem(this.props.route.params.idPath);
+        const {navigation, route} = this.props;
+        const list = this.context.list.getItem(route.params.idPath);
 
         const addOptions = [
             {
                 text: 'Item',
                 onPress: () =>
-                    this.setState({
-                        optionModal: false,
-                        nameModal: true,
-                        nameModalHeadline: 'Item name',
-                        nameModalSubmitText: 'Add',
-                        nameModalSubmit: () =>
+                    navigation.replace('textInputModal', {
+                        headline: 'Item name',
+                        submitText: 'Add',
+                        onSubmit: text => {
                             this.context.addItem(
-                                this.props.route.params.idPath,
+                                route.params.idPath,
                                 'item',
-                                this.state.newName,
-                            ),
+                                text,
+                            );
+                            navigation.goBack();
+                        },
+                        initialTextInputValue: '',
+                        selectTextOnFocus: true,
                     }),
             },
             {
                 text: 'List',
                 onPress: () =>
-                    this.setState({
-                        optionModal: false,
-                        nameModal: true,
-                        nameModalHeadline: 'List name',
-                        nameModalSubmitText: 'Add',
-                        nameModalSubmit: () =>
+                    navigation.replace('textInputModal', {
+                        headline: 'List name',
+                        submitText: 'Add',
+                        onSubmit: text => {
                             this.context.addItem(
-                                this.props.route.params.idPath,
+                                route.params.idPath,
                                 'list',
-                                this.state.newName,
-                            ),
+                                text,
+                            );
+                            navigation.goBack();
+                        },
+                        initialTextInputValue: '',
+                        selectTextOnFocus: true,
                     }),
             },
             {
                 text: 'From JSON file',
                 onPress: async () => {
-                    this.setState({
-                        optionModal: false,
-                    });
+                    navigation.goBack();
 
                     // Pick a single file
                     try {
-                        let content = await pickAndRead(['application/json']);
+                        const content = await pickAndRead(['application/json']);
 
                         if (content) {
                             try {
-                                let contentJson = JSON.parse(content);
+                                const contentJson = JSON.parse(content);
 
                                 if (
                                     this.context.list.validateJson(contentJson)
                                 ) {
                                     this.context.addFromJson(
                                         contentJson,
-                                        this.props.route.params.idPath,
+                                        route.params.idPath,
                                     );
                                 } else {
                                     Alert.alert(
@@ -110,18 +97,16 @@ export class ListView extends Component {
             {
                 text: 'From TXT file',
                 onPress: async () => {
-                    this.setState({
-                        optionModal: false,
-                    });
+                    navigation.goBack();
 
                     // Pick a single file
                     try {
-                        let content = await pickAndRead(['text/plain']);
+                        const content = await pickAndRead(['text/plain']);
 
                         if (content) {
-                            let contentList = content.split(/\r?\n/);
+                            const contentList = content.split(/\r?\n/);
 
-                            for (let line of contentList) {
+                            for (const line of contentList) {
                                 this.context.addItem(
                                     this.props.route.params.idPath,
                                     'item',
@@ -140,78 +125,70 @@ export class ListView extends Component {
             },
         ];
 
-        const editOptions = [
+        const editOptions = idPath => [
             {
                 text: 'Rename',
                 onPress: () => {
-                    this.setState({
-                        optionModal: false,
-                        nameModal: true,
-                        nameModalHeadline: 'New name',
-                        nameModalSubmitText: 'Rename',
-                        nameModalSubmit: () =>
-                            this.context.renameItem(
-                                this.state.newName,
-                                this.state.selectedIdPath,
-                            ),
-                        newName: this.context.list.getItem(
-                            this.state.selectedIdPath,
-                        ).name,
+                    navigation.replace('textInputModal', {
+                        headline: 'New name',
+                        submitText: 'Rename',
+                        onSubmit: text => {
+                            this.context.renameItem(text, idPath);
+                            navigation.goBack();
+                        },
+                        initialTextInputValue:
+                            this.context.list.getItem(idPath).name,
+                        selectTextOnFocus: true,
                     });
                 },
             },
             {
                 text: 'Delete',
                 onPress: () => {
-                    this.context.deleteItem(this.state.selectedIdPath);
-                    this.setState({
-                        optionModal: false,
-                        selectedIdPath: [],
-                    });
+                    this.context.deleteItem(idPath);
+                    navigation.goBack();
                 },
             },
             {
                 text: 'Export as JSON',
-                onPress: () =>
-                    this.setState({
-                        optionModal: false,
-                        nameModal: true,
-                        nameModalHeadline: 'JSON name',
-                        nameModalSubmitText: 'Export',
-                        nameModalSubmit: () => {
+                onPress: () => {
+                    navigation.replace('textInputModal', {
+                        headline: 'JSON name',
+                        submitText: 'Export',
+                        onSubmit: text => {
                             writeFile(
-                                this.state.newName + '.json',
+                                text + '.json',
                                 RNFS.DownloadDirectoryPath,
                                 JSON.stringify(
                                     list.exportJson({
                                         space: 2,
                                         ids: [
-                                            this.context.list.getItem(
-                                                this.state.selectedIdPath,
-                                            ).id,
+                                            this.context.list.getItem(idPath)
+                                                .id,
                                         ],
                                     }).items,
                                 ),
                                 'File saved to Downloads folder',
                             );
+                            navigation.goBack();
                         },
-                        newName: this.context.list.getItem(
-                            this.state.selectedIdPath,
-                        ).name,
-                    }),
+                        initialTextInputValue:
+                            this.context.list.getItem(idPath).name,
+                        selectTextOnFocus: true,
+                    });
+                },
             },
         ];
 
         const additionalComponents = [
             <PressableIcon
                 key={'add'}
-                onPress={() =>
-                    this.setState({
-                        optionModal: true,
-                        optionModalHeadline: 'Add',
-                        optionModalOptions: addOptions,
-                    })
-                }
+                onPress={() => {
+                    navigation.navigate('optionModal', {
+                        headline: 'Add',
+                        options: addOptions,
+                    });
+                }}
                 icon={'add'}
                 style={this.context.style.headerStyle.icon}
                 ripple={this.context.style.rippleStyle.icon}
@@ -240,16 +217,14 @@ export class ListView extends Component {
                         });
                     }
                 }}
-                onLongPress={() =>
-                    this.setState({
-                        optionModal: true,
-                        optionModalHeadline: 'Edit',
-                        optionModalOptions: editOptions,
-                        selectedIdPath: this.props.route.params.idPath.concat([
-                            item.id,
-                        ]),
-                    })
-                }
+                onLongPress={() => {
+                    navigation.navigate('optionModal', {
+                        headline: 'Edit',
+                        options: editOptions(
+                            route.params.idPath.concat([item.id]),
+                        ),
+                    });
+                }}
                 text={item.name}
                 activate={() => {
                     this.context.setListProperty(
@@ -275,49 +250,6 @@ export class ListView extends Component {
 
         return (
             <View style={this.context.style.listViewStyle.upperLevelView}>
-                <OptionModal
-                    visible={this.state.optionModal}
-                    onRequestClose={() =>
-                        this.setState({
-                            optionModal: false,
-                            optionModalHeadline: '',
-                            optionModalOptions: [],
-                            selectedIdPath: [],
-                            newName: '',
-                        })
-                    }
-                    headline={this.state.optionModalHeadline}
-                    options={this.state.optionModalOptions}
-                />
-                <TextInputModal
-                    visible={this.state.nameModal}
-                    onRequestClose={() =>
-                        this.setState({
-                            nameModal: false,
-                            nameModalHeadline: '',
-                            nameModalSubmitText: '',
-                            nameModalSubmit: () => {},
-                            selectedIdPath: [],
-                            newName: '',
-                        })
-                    }
-                    headline={this.state.nameModalHeadline}
-                    onChangeText={text => this.setState({newName: text})}
-                    textInputValue={this.state.newName}
-                    selectTextOnFocus={true}
-                    submitText={this.state.nameModalSubmitText}
-                    onSubmit={() => {
-                        this.state.nameModalSubmit();
-                        this.setState({
-                            nameModal: false,
-                            newName: '',
-                            nameModalHeadline: '',
-                            nameModalSubmitText: '',
-                            nameModalSubmit: () => {},
-                            selectedIdPath: [],
-                        });
-                    }}
-                />
                 <Header
                     showBackButton={this.props.route.params.idPath.length}
                     navigation={this.props.navigation}

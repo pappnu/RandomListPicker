@@ -7,18 +7,13 @@ import RNFS from 'react-native-fs';
 import {appContext} from '../context/context';
 import {PressableIcon} from '../components/pressableIcon';
 import {Header} from '../components/header';
-import {OptionModal, TextInputModal} from '../components/modals';
 import {writeFile} from '../fileAccess/fileAccess';
 
 export class RandomizationResult extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            sortModal: false,
-            exportModal: false,
-            nameModal: false,
             exportFunction: () => {},
-            exportName: 'Result',
         };
         [this.parentLists, this.shortestPathLength] =
             this.extractParentListNames([...props.route.params.result.items]);
@@ -234,7 +229,9 @@ export class RandomizationResult extends Component {
     }
 
     render() {
-        let items = [...this.props.route.params.result.items];
+        const {navigation, route} = this.props;
+
+        let items = [...route.params.result.items];
         switch (this.context.settings.resultSort) {
             case 'natural':
                 items = this.listItems(
@@ -269,121 +266,95 @@ export class RandomizationResult extends Component {
                 text: 'Pick order',
                 onPress: () => {
                     this.context.setSetting('resultSort', 'pickOrder');
-                    this.setState({
-                        sortModal: false,
-                    });
+                    navigation.goBack();
                 },
             },
             {
                 text: 'Natural',
                 onPress: () => {
                     this.context.setSetting('resultSort', 'natural');
-                    this.setState({
-                        sortModal: false,
-                    });
+                    navigation.goBack();
                 },
             },
             {
                 text: 'By list',
                 onPress: () => {
                     this.context.setSetting('resultSort', 'byList');
-                    this.setState({
-                        sortModal: false,
-                    });
+                    navigation.goBack();
                 },
             },
             {
                 text: 'By list natural',
                 onPress: () => {
                     this.context.setSetting('resultSort', 'byListNatural');
-                    this.setState({
-                        sortModal: false,
-                    });
+                    navigation.goBack();
                 },
             },
         ];
+
+        const exportParams = {
+            headline: 'File name',
+            initialTextInputValue: 'Result',
+            selectTextOnFocus: true,
+            submitText: 'Export',
+            onSubmit: text => {
+                this.state.exportFunction(text);
+                navigation.goBack();
+            },
+        };
 
         const exportOptions = [
             {
                 text: 'JSON',
                 onPress: () => {
                     this.setState({
-                        exportModal: false,
-                        nameModal: true,
                         exportFunction: this.exportJson.bind(this),
                     });
+                    navigation.replace('textInputModal', exportParams);
                 },
             },
             {
                 text: 'JSON with parent lists',
                 onPress: () => {
                     this.setState({
-                        exportModal: false,
-                        nameModal: true,
                         exportFunction:
                             this.exportJsonWithParentLists.bind(this),
                     });
+                    navigation.replace('textInputModal', exportParams);
                 },
             },
             {
                 text: 'TXT',
                 onPress: () => {
                     this.setState({
-                        exportModal: false,
-                        nameModal: true,
                         exportFunction: this.exportTxt.bind(this),
                     });
+                    navigation.replace('textInputModal', exportParams);
                 },
             },
             {
                 text: 'TXT with parent lists',
                 onPress: () => {
                     this.setState({
-                        exportModal: false,
-                        nameModal: true,
                         exportFunction:
                             this.exportTxtWithParentLists.bind(this),
                     });
+                    navigation.replace('textInputModal', exportParams);
                 },
             },
         ];
-
-        const optionModals = [
-            {
-                visible: this.state.sortModal,
-                onRequestClose: () =>
-                    this.setState({
-                        sortModal: false,
-                    }),
-                headline: 'Sort results',
-                options: sortOptions,
-            },
-            {
-                visible: this.state.exportModal,
-                onRequestClose: () =>
-                    this.setState({
-                        exportModal: false,
-                    }),
-                headline: 'Export as',
-                options: exportOptions,
-            },
-        ];
-
-        const optionModalsJsx = optionModals.map(i => (
-            <OptionModal
-                key={i.headline}
-                visible={i.visible}
-                onRequestClose={i.onRequestClose}
-                headline={i.headline}
-                options={i.options}
-            />
-        ));
 
         const additionalComponents = [
             <PressableIcon
                 key="export"
                 onPress={() => {
-                    this.setState({exportModal: true});
+                    this.setState({
+                        exportFunction: () => {},
+                    });
+                    navigation.navigate('optionModal', {
+                        headline: 'Export as',
+                        options: exportOptions,
+                    });
                 }}
                 icon={'file-download'}
                 style={this.context.style.headerStyle.icon}
@@ -392,7 +363,10 @@ export class RandomizationResult extends Component {
             <PressableIcon
                 key="sort"
                 onPress={() => {
-                    this.setState({sortModal: true});
+                    navigation.navigate('optionModal', {
+                        headline: 'Sort results',
+                        options: sortOptions,
+                    });
                 }}
                 icon={'sort'}
                 style={this.context.style.headerStyle.icon}
@@ -402,34 +376,10 @@ export class RandomizationResult extends Component {
 
         return (
             <View style={this.context.style.resultStyle.upperLevelView}>
-                {optionModalsJsx}
-                <TextInputModal
-                    visible={this.state.nameModal}
-                    onRequestClose={() =>
-                        this.setState({
-                            nameModal: false,
-                            exportFunction: () => {},
-                            exportName: 'Result',
-                        })
-                    }
-                    headline={'File name'}
-                    onChangeText={text => this.setState({exportName: text})}
-                    textInputValue={this.state.exportName}
-                    selectTextOnFocus={true}
-                    submitText={'Export'}
-                    onSubmit={() => {
-                        this.state.exportFunction(this.state.exportName);
-                        this.setState({
-                            nameModal: false,
-                            exportFunction: () => {},
-                            exportName: 'Result',
-                        });
-                    }}
-                />
                 <Header
                     showBackButton={true}
-                    navigation={this.props.navigation}
-                    text={this.props.route.params.result.name}
+                    navigation={navigation}
+                    text={route.params.result.name}
                     additionalComponents={additionalComponents}
                 />
                 <FlatList data={items} renderItem={this.renderJsx} />

@@ -4,7 +4,6 @@ import RNFS from 'react-native-fs';
 
 import {appContext} from '../context/context';
 import {Header} from '../components/header';
-import {TextInputModal} from '../components/modals';
 import {
     CheckBoxSetting,
     InfoText,
@@ -14,18 +13,11 @@ import {
 import {writeFile} from '../fileAccess/fileAccess';
 
 export class ListSettings extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            nameModal: false,
-            newName: '',
-        };
-    }
-
     renderSetting = ({item}) => item;
 
     render() {
-        const list = this.context.list.getItem(this.props.route.params.idPath);
+        const {navigation, route} = this.props;
+        const list = this.context.list.getItem(route.params.idPath);
 
         let infoFields = [
             {
@@ -273,7 +265,21 @@ export class ListSettings extends Component {
             {
                 text: 'Export items and sublists as JSON',
                 onPress: () =>
-                    this.setState({nameModal: true, newName: list.name}),
+                    navigation.navigate('textInputModal', {
+                        headline: 'JSON name',
+                        submitText: 'Export',
+                        onSubmit: text => {
+                            writeFile(
+                                text + '.json',
+                                RNFS.DownloadDirectoryPath,
+                                JSON.stringify(list.exportJson().items),
+                                'File saved to Downloads folder',
+                            );
+                            navigation.goBack();
+                        },
+                        initialTextInputValue: list.name,
+                        selectTextOnFocus: true,
+                    }),
             },
             {
                 text: 'Randomization history',
@@ -320,27 +326,6 @@ export class ListSettings extends Component {
 
         return (
             <View style={this.context.style.settingsStyle.upperLevelView}>
-                <TextInputModal
-                    visible={this.state.nameModal}
-                    onRequestClose={() => this.setState({nameModal: false})}
-                    headline={'File name'}
-                    onChangeText={text => this.setState({newName: text})}
-                    textInputValue={this.state.newName}
-                    selectTextOnFocus={true}
-                    submitText={'Export'}
-                    onSubmit={() => {
-                        writeFile(
-                            this.state.newName + '.json',
-                            RNFS.DownloadDirectoryPath,
-                            JSON.stringify(list.exportJson({space: 2}).items),
-                            'File saved to Downloads folder',
-                        );
-                        this.setState({
-                            nameModal: false,
-                            newName: '',
-                        });
-                    }}
-                />
                 <Header
                     showBackButton={true}
                     navigation={this.props.navigation}

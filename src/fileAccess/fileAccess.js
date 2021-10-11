@@ -46,7 +46,11 @@ export async function writeFile(
         const fullPath = path + '/' + name;
         // TODO: find a non-hacky solution
         // for details see: https://github.com/itinance/react-native-fs/issues/700#issuecomment-570650632
-        await RNFS.unlink(fullPath);
+        try {
+            await RNFS.unlink(fullPath);
+        } catch (error) {
+            console.error("Couldn't unlink file", fullPath, error);
+        }
         RNFS.writeFile(fullPath, content, encoding)
             .then(success => {
                 ToastAndroid.show(successToast, ToastAndroid.SHORT);
